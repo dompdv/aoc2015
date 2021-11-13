@@ -5,7 +5,8 @@ defmodule AdventOfCode.Day02 do
     parse(args) |> map(fn [l, w, h] -> 2 * (l*w + l*h + w*h) + min([l*w , l*h , w*h]) end) |> sum
   end
 
-  def part2(_args) do
+  def part2(args) do
+    parse(args) |> map(fn [l, w, h] -> l*w*h + 2 * min([l+w , l+h , w+h]) end) |> sum
   end
 
   def parse(args) do

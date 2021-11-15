@@ -40,7 +40,9 @@ defmodule AdventOfCode.Day03 do
       {santa_pos_x, santa_pos_y},
       {robo_santa_pos_x, robo_santa_pos_y},
       -turn,
-      visited |> MapSet.put({santa_pos_x, santa_pos_y}) |> MapSet.put({robo_santa_pos_x, robo_santa_pos_y})
+      visited
+      |> MapSet.put({santa_pos_x, santa_pos_y})
+      |> MapSet.put({robo_santa_pos_x, robo_santa_pos_y})
     )
   end
 

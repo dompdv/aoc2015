@@ -38,6 +38,7 @@ defmodule AdventOfCode.Day06 do
 
   def part1(args) do
     parsed_input = args |> String.split("\n") |> drop(-1) |> map(&parse_line/1)
+
     reduce(
       parsed_input,
       MapSet.new(),
@@ -46,6 +47,25 @@ defmodule AdventOfCode.Day06 do
     |> count()
   end
 
-  def part2(_args) do
+  def update_lights2({lx, ly, hx, hy, onoff}, lights_on) do
+    reduce(
+      (for x <- lx..hx, y <- ly..hy, into: MapSet.new(), do: {x, y}),
+      lights_on,
+      fn light, acc ->
+        Map.put(acc, light, Kernel.max(0, Map.get(acc, light, 0) + onoff))
+      end
+    )
+  end
+
+  def part2(args) do
+    parsed_input = args |> String.split("\n") |> drop(-1) |> map(&parse_line/1)
+
+    reduce(
+      parsed_input,
+      Map.new(),
+      &update_lights2/2
+    )
+    |> Map.values()
+    |> sum()
   end
 end

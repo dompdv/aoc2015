@@ -19,8 +19,7 @@ defmodule AdventOfCode.Day06 do
      onoff}
   end
 
-  def update_lights(line, lights_on) do
-    {lx, ly, hx, hy, onoff} = parse_line(line)
+  def update_lights({lx, ly, hx, hy, onoff}, lights_on) do
     g = for x <- lx..hx, y <- ly..hy, into: MapSet.new(), do: {x, y}
 
     case onoff do
@@ -38,8 +37,9 @@ defmodule AdventOfCode.Day06 do
   end
 
   def part1(args) do
+    parsed_input = args |> String.split("\n") |> drop(-1) |> map(&parse_line/1)
     reduce(
-      args |> String.split("\n") |> drop(-1),
+      parsed_input,
       MapSet.new(),
       &update_lights/2
     )

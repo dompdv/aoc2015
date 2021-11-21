@@ -49,7 +49,7 @@ defmodule AdventOfCode.Day06 do
 
   def update_lights2({lx, ly, hx, hy, onoff}, lights_on) do
     reduce(
-      (for x <- lx..hx, y <- ly..hy, into: MapSet.new(), do: {x, y}),
+      for(x <- lx..hx, y <- ly..hy, into: MapSet.new(), do: {x, y}),
       lights_on,
       fn light, acc ->
         Map.put(acc, light, Kernel.max(0, Map.get(acc, light, 0) + onoff))

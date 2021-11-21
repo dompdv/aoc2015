@@ -1,27 +1,31 @@
 defmodule AdventOfCode.Day07 do
   use Bitwise
 
-  def gate_set(c, wire, value), do: Map.put(c, wire, value)
-  def gate_and(c, wire, wireA, wireB), do: Map.put(c, wire, c[wireA] &&& c[wireB])
-  def gate_or(c, wire, wireA, wireB), do: Map.put(c, wire, c[wireA] ||| c[wireB])
+  @bin16max 65_536
 
-  def gate_lshift(c, wire, wireA, value), do: Map.put(c, wire, c[wireA] <<< value)
-  def gate_rshift(c, wire, wireA, value), do: Map.put(c, wire, c[wireA] >>> value)
-
-  def gate_not(c, wire, wireA), do: Map.put(c, wire, ~~~c[wireA])
-
-  def to_16bits(v), do: rem(rem(v, 65536) + 65536, 65536)
-
+  def to_16bits(v), do: rem(rem(v, @bin16max) + @bin16max, @bin16max)
 
   def execute_circuit({:value, wire_out, val}, c), do: Map.put(c, wire_out, val)
-  def execute_circuit({:not, wire_out, val}, c), do: Map.put(c, wire_out, val)
 
+  def execute_circuit({:connect, wire_out, wire_from}, c), do: Map.put(c, wire_out, c[wire_from])
 
+  def execute_circuit({:and, wire_out, wire_a, wire_b}, c),
+    do: Map.put(c, wire_out, c[wire_a] &&& c[wire_b])
 
+  def execute_circuit({:or, wire_out, wire_a, wire_b}, c),
+    do: Map.put(c, wire_out, c[wire_a] ||| c[wire_b])
 
+  def execute_circuit({:lshift, wire_out, wire_a, value}, c),
+    do: Map.put(c, wire_out, c[wire_a] <<< value)
+
+  def execute_circuit({:rshift, wire_out, wire_a, value}, c),
+    do: Map.put(c, wire_out, c[wire_a] >>> value)
+
+  def execute_circuit({:not, wire_out, wire_a}, c), do: Map.put(c, wire_out, ~~~c[wire_a])
 
   def part1(args) do
     instructions = parse(args)
+
     Enum.reduce(
       instructions,
       %{},
@@ -38,32 +42,45 @@ defmodule AdventOfCode.Day07 do
 
     cond do
       String.contains?(action, " AND ") ->
-        [wireA, wireB] = String.split(action, " AND ")
-        {:and, wire_out, wireA, wireB}
+        [wire_a, wire_b] = String.split(action, " AND ")
+        {:and, wire_out, wire_a, wire_b}
 
       String.contains?(action, " OR ") ->
-        [wireA, wireB] = String.split(action, " OR ")
-        {:or, wire_out, wireA, wireB}
+        [wire_a, wire_b] = String.split(action, " OR ")
+        {:or, wire_out, wire_a, wire_b}
 
       String.contains?(action, " LSHIFT ") ->
-        [wireA, val] = String.split(action, " LSHIFT ")
-        {:lshift, wire_out, wireA, String.to_integer(val)}
+        [wire_a, val] = String.split(action, " LSHIFT ")
+        {:lshift, wire_out, wire_a, String.to_integer(val)}
 
       String.contains?(action, " RSHIFT ") ->
-        [wireA, val] = String.split(action, " RSHIFT ")
-        {:rshift, wire_out, wireA, String.to_integer(val)}
+        [wire_a, val] = String.split(action, " RSHIFT ")
+        {:rshift, wire_out, wire_a, String.to_integer(val)}
 
       String.contains?(action, "NOT ") ->
-        [_, wireA] = String.split(action, "NOT ")
-        {:not, wire_out, wireA}
+        [_, wire_a] = String.split(action, "NOT ")
+        {:not, wire_out, wire_a}
 
-      true -> {:value, wire_out, String.to_integer(action)}
+      Integer.parse(action) ->
+        {:connect, wire_out, action}
+
+      true ->
+        {:value, wire_out, String.to_integer(action)}
     end
   end
 
   def parse(args) do
     args |> String.split("\n") |> Enum.drop(-1) |> Enum.map(&parse_line/1)
   end
+
+  def gate_set(c, wire, value), do: Map.put(c, wire, value)
+  def gate_and(c, wire, wire_a, wire_b), do: Map.put(c, wire, c[wire_a] &&& c[wire_b])
+  def gate_or(c, wire, wire_a, wire_b), do: Map.put(c, wire, c[wire_a] ||| c[wire_b])
+
+  def gate_lshift(c, wire, wire_a, value), do: Map.put(c, wire, c[wire_a] <<< value)
+  def gate_rshift(c, wire, wire_a, value), do: Map.put(c, wire, c[wire_a] >>> value)
+
+  def gate_not(c, wire, wire_a), do: Map.put(c, wire, ~~~c[wire_a])
 
   def part1_old(_args) do
     circuit = [

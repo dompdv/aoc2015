@@ -1,24 +1,39 @@
 defmodule AdventOfCode.Day06 do
   import Enum
 
-  def update_lights(line, lights_on) do
-    IO.inspect(line)
+  def parse_line(line) do
     %{"hx" => hx, "hy" => hy, "lx" => lx, "ly" => ly, "onoff" => onoff} =
       Regex.named_captures(
         ~r/(?<onoff>turn on|turn off|toggle) (?<hx>[0-9]*),(?<hy>[0-9]*) through (?<lx>[0-9]*),(?<ly>[0-9]*)/,
         line
       )
-    hx = String.to_integer(hx)
-    hy = String.to_integer(hy)
-    lx = String.to_integer(lx)
-    ly = String.to_integer(ly)
-    g = for x <- lx..hx, y <- ly..hy, into: MapSet.new(), do: {x,y}
+
+    onoff =
+      case onoff do
+        "turn on" -> 1
+        "turn off" -> -1
+        "toggle" -> 2
+      end
+
+    {String.to_integer(lx), String.to_integer(ly), String.to_integer(hx), String.to_integer(hy),
+     onoff}
+  end
+
+  def update_lights(line, lights_on) do
+    {lx, ly, hx, hy, onoff} = parse_line(line)
+    g = for x <- lx..hx, y <- ly..hy, into: MapSet.new(), do: {x, y}
+
     case onoff do
-    "turn on" -> MapSet.union(lights_on, g)
-    "turn off" -> MapSet.difference(lights_on, g)
-    "toggle" -> to_switch_off = MapSet.intersection(lights_on, g)
-                to_switch_on = MapSet.difference(g, to_switch_off)
-                MapSet.union(MapSet.difference(lights_on, to_switch_off), to_switch_on)
+      1 ->
+        MapSet.union(lights_on, g)
+
+      -1 ->
+        MapSet.difference(lights_on, g)
+
+      2 ->
+        to_switch_off = MapSet.intersection(lights_on, g)
+        to_switch_on = MapSet.difference(g, to_switch_off)
+        MapSet.union(MapSet.difference(lights_on, to_switch_off), to_switch_on)
     end
   end
 

@@ -59,16 +59,16 @@ defmodule AdventOfCode.Day07 do
   end
 
   def part1(args) do
-    instructions =
-      parse(args)
-      # |> Enum.each(&IO.inspect/1)
-      |> Map.new()
-
+    instructions = parse(args) |> Map.new()
     res = wire_value(%{}, instructions, "a")
     res["a"]
   end
 
-  def part2(_args) do
+  def part2(args) do
+    instructions = parse(args) |> Map.new()
+    res = wire_value(%{}, instructions, "a")
+    res = wire_value(%{"b" => res["a"]}, instructions, "a")
+    res["a"]
   end
 
   def to_v(value) do

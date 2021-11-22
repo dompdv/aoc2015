@@ -60,15 +60,13 @@ defmodule AdventOfCode.Day07 do
 
   def part1(args) do
     instructions = parse(args) |> Map.new()
-    res = wire_value(%{}, instructions, "a")
-    res["a"]
+    wire_value(%{}, instructions, "a")["a"]
   end
 
   def part2(args) do
     instructions = parse(args) |> Map.new()
     res = wire_value(%{}, instructions, "a")
-    res = wire_value(%{"b" => res["a"]}, instructions, "a")
-    res["a"]
+    wire_value(%{"b" => res["a"]}, instructions, "a")["a"]
   end
 
   def to_v(value) do

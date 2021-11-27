@@ -23,6 +23,8 @@ defmodule AdventOfCode.Day10 do
     |> count()
   end
 
-  def part2(_args) do
+  def part2({n, str}) do
+    reduce(1..n, to_charlist(str), fn _, acc -> iterate(acc) end)
+    |> count()
   end
 end

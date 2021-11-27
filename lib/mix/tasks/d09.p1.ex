@@ -5,7 +5,15 @@ defmodule Mix.Tasks.D09.P1 do
 
   @shortdoc "Day 09 Part 1"
   def run(args) do
-    input = nil
+    input = AdventOfCode.Input.get!(9, 2015)
+
+    """
+    London to Dublin = 464
+    London to Belfast = 518
+    Dublin to Belfast = 141
+    """
+
+    #
 
     if Enum.member?(args, "-b"),
       do: Benchee.run(%{part_1: fn -> input |> part1() end}),

@@ -5,6 +5,7 @@ defmodule Mix.Tasks.D13.P2 do
 
   @shortdoc "Day 13 Part 2"
   def run(args) do
+    # AdventOfCode.Input.get!(12, 2015)
     input = nil
 
     if Enum.member?(args, "-b"),

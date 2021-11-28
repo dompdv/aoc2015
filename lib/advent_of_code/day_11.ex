@@ -58,13 +58,14 @@ defmodule AdventOfCode.Day11 do
     initial = args |> to_charlist() |> map(fn c -> c - ?a end)
 
     [next_password] =
-      Stream.iterate(initial, fn chars -> next_sequence(chars) end)
+      Stream.iterate(next_sequence(initial), fn chars -> next_sequence(chars) end)
       |> Stream.filter(&check_password/1)
       |> Enum.take(1)
 
     print_password(next_password)
   end
 
-  def part2(_args) do
+  def part2(args) do
+    part1(args)
   end
 end

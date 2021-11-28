@@ -22,6 +22,12 @@ defmodule AdventOfCode.Day13 do
     total_happiness(graph, people, [])
   end
 
-  def part2(_args) do
+  def part2(args) do
+    graph = args |> String.split("\n") |> drop(-1) |> map(&parse_line/1) |> Map.new()
+    people = Map.keys(graph) |> map(fn {p1, p2} -> [p1, p2] end) |> List.flatten() |> uniq()
+    graph = for p <- people, into: graph, do: {{"moi", p}, 0}
+    graph = for p <- people, into: graph, do: {{p, "moi"}, 0}
+    people = people ++ ["moi"]
+    total_happiness(graph, people, [])
   end
 end

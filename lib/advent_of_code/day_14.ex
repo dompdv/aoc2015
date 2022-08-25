@@ -24,6 +24,47 @@ defmodule AdventOfCode.Day14 do
       |> Enum.map(&elem(&1, 1))
       |> Enum.max()
 
-  def part2(_args) do
+  def tick_one(
+        %{status: :running, rest: rest, countdown: 1, distance: distance, speed: speed} = runner
+      ),
+      do: %{runner | status: :resting, countdown: rest, distance: distance + speed}
+
+  def tick_one(%{status: :resting, duration: duration, countdown: 1} = runner),
+    do: %{runner | status: :running, countdown: duration}
+
+  def tick_one(
+        %{status: :running, countdown: countdown, distance: distance, speed: speed} = runner
+      ),
+      do: %{runner | countdown: countdown - 1, distance: distance + speed}
+
+  def tick_one(%{status: :resting, countdown: countdown} = runner),
+    do: %{runner | countdown: countdown - 1}
+
+  def tick(runners) do
+    runners = Enum.map(runners, &tick_one/1)
+    pole_position = runners |> Enum.map(& &1.distance) |> Enum.max()
+
+    Enum.map(runners, fn %{score: score, distance: distance} = runner ->
+      %{runner | score: score + if(distance == pole_position, do: 1, else: 0)}
+    end)
+  end
+
+  def part2(args) do
+    runners =
+      parse(args)
+      |> Enum.map(fn {name, speed, duration, rest} ->
+        %{
+          name: name,
+          speed: speed,
+          duration: duration,
+          rest: rest,
+          status: :running,
+          countdown: duration,
+          distance: 0,
+          score: 0
+        }
+      end)
+
+    Enum.reduce(1..2503, runners, fn _, r -> tick(r) end) |> Enum.map(& &1.score) |> Enum.max()
   end
 end
